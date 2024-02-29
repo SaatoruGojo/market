@@ -1,0 +1,88 @@
+<!-- apply.html -->
+{% extends 'base.html' %}
+
+{% block title %}Apply for IPO{% endblock %}
+
+{% block content %}
+    <h1>Apply for IPO</h1>
+    <h2>Company: {{ ipo_details[1] }}</h2>
+    <p>Number of Shares: <span id="availableShares">{{ ipo_details[2] }}</span></p>
+    <p>Price per Share: {{ ipo_details[3] }}</p>
+    <p>Total Share Value: <span id="totalShareValue">0</span></p>
+    <p>Total Remaining Share Value: <span id="remainingShareValue">{{ ipo_details[2] * ipo_details[3] }}</span></p> <!-- New: Display total remaining share value -->
+    
+
+
+    
+    <!-- Form to specify number of friends -->
+    <form id="friendsForm">
+        <div id="friendInputs">
+            <div class="friendInput">
+                <label for="friendName">Name of Friend:</label>
+                <input type="text" name="friendName" required>
+                <label for="friendAmount">Amount Invested:</label>
+                <input type="number" name="friendAmount" required>
+                <button type="button" onclick="calculateShares(this)">Calculate Shares</button>
+                <div class="friendShares"></div>
+            </div>
+        </div>
+        <button id="addFriendButton" type="button" onclick="addFriendInput()">Add Friend</button>
+    </form>
+
+    <!-- Script to handle dynamic friend fields -->
+    <script>
+        var remainingShareValue = parseFloat("{{ ipo_details[2] * ipo_details[3] }}"); // New: Initialize remaining share value
+        
+        function addFriendInput() {
+            var availableShares = parseInt(document.getElementById('availableShares').textContent);
+            if (availableShares <= 0 || remainingShareValue <= 0) {
+                document.getElementById('addFriendButton').disabled = true;
+                alert("All shares have been allotted.");
+                return;
+            }
+            var container = document.getElementById("friendInputs");
+            var div = document.createElement("div");
+            div.classList.add("friendInput");
+            div.innerHTML = `
+                <label for="friendName">Name of Friend:</label>
+                <input type="text" name="friendName" required>
+                <label for="friendAmount">Amount Invested:</label>
+                <input type="number" name="friendAmount" required>
+                <button type="button" onclick="calculateShares(this)">Calculate Shares</button>
+                <div class="friendShares"></div>
+            `;
+            container.appendChild(div);
+            remainingShareValue -= parseFloat(document.getElementById('ipo_details')[3]); // Update remaining share value
+            document.getElementById('remainingShareValue').textContent = remainingShareValue.toFixed(2); // Display remaining share value
+        }
+
+        function calculateShares(button) {
+            var availableShares = parseInt(document.getElementById('availableShares').textContent);
+            var inputDiv = button.parentNode;
+            var amountInput = inputDiv.querySelector(`input[name=friendAmount]`);
+            var sharesDiv = inputDiv.querySelector(`.friendShares`);
+            sharesDiv.innerHTML = '';
+
+            var amount = parseInt(amountInput.value);
+            var pricePerShare = parseFloat("{{ ipo_details[3] }}"); // Fetch price per share from template
+            var numShares = Math.floor(amount / pricePerShare);
+            var calculatedAmount = numShares * pricePerShare;
+
+            if (calculatedAmount <= amount && numShares <= availableShares) {
+                sharesDiv.innerHTML = `Shares: ${numShares}, Calculated Amount: ${calculatedAmount}`;
+                availableShares -= numShares;
+            } else {
+                if (calculatedAmount > amount) {
+                    sharesDiv.innerHTML = 'Amount exceeds available funds!';
+                } else {
+                    sharesDiv.innerHTML = 'Not enough available shares!';
+                }
+            }
+            document.getElementById('availableShares').textContent = availableShares;
+            if (availableShares <= 0) {
+                document.getElementById('addFriendButton').disabled = true;
+                alert("All shares have been allotted.");
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,31 @@
+<!-- ipo.html -->
+{% extends 'base.html' %}
+
+{% block title %}IPOs{% endblock %}
+
+{% block content %}
+    <h1>IPO Listings</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Number of Shares</th>
+                <th>Price per Share</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ipo in ipo_listings %}
+            <tr>
+                <td>{{ ipo[0] }}</td>
+                <td>{{ ipo[1] }}</td>
+                <td>{{ ipo[2] }}</td>
+                <td>{{ ipo[3] }}</td>
+                <td><a href="/apply/{{ ipo[0] }}" class="btn btn-primary">Apply</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add" class="btn btn-success">Add IPO</a>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!-- index.html -->
+{% extends 'base.html' %}
+
+{% block title %}IPO Listings{% endblock %}
+
+{% block content %}
+    <h1>Welcome to IPO Listings</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Symbol</th>
+                <th>Date</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ipo in ipo_listings %}
+            <tr>
+                <td>{{ ipo['company'] }}</td>
+                <td>{{ ipo['symbol'] }}</td>
+                <td>{{ ipo['date'] }}</td>
+                <td>{{ ipo['price'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
